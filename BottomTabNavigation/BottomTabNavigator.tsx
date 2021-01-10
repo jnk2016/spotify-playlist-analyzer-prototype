@@ -5,8 +5,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import Playlist from '../screens/Playlist';
 import Settings from '../screens/Settings';
+import Song from '../screens/Song';
 import { createStackNavigator } from '@react-navigation/stack';
 import Animated from 'react-native-reanimated';
+
+
 // import ViewPagerAdapter from 'react-native-tab-view-viewpager-adapter';
 
 /* May have to create own top tab navigation that does what I want it to do
@@ -131,6 +134,21 @@ function PlaylistStackScreen(){
                               //   headerRight: ()=> <ProfilePic/>,
                               // }}
                               />
+              <HomeStack.Screen name = "Song" component={Song}
+                                // options={{
+                                //   title: "Hello, Danphuong",
+                                //   headerStyle: {
+                                //     borderBottomColor: 'transparent',
+                                //     backgroundColor: '#FFFFFF', //Set Header color
+                                //   },
+                                //   headerTintColor: '#000000', //Set Header text color
+                                //   headerTitleStyle: {
+                                //     fontWeight: '600', //Set Header text style
+                                //     fontFamily: 'Spartan',
+                                //   },
+                                //   headerRight: ()=> <ProfilePic/>,
+                                // }}
+                                />
         </HomeStack.Navigator>
     );
 }
