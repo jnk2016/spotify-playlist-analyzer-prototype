@@ -3,7 +3,7 @@ import {Button, Image, StyleSheet, TextInput, TouchableHighlight, Text, View, Al
 import Modal from 'modal-react-native-web';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-class Home extends Component {
+class Playlist extends Component {
 
   render() {return (
     <ImageBackground source = {{uri:require('../assets/images/planet_earth_7am.jpg')}} style = {styles.backgroundimage} blurRadius= {200}>
@@ -25,18 +25,64 @@ class Home extends Component {
           </TouchableOpacity>
         </View>
         <View style={styles.optionsContainer}>
-          {/* <View>
-            <Text style={styles.optionsLabel}>sort by</Text>
-            <TouchableOpacity style={styles.dropdownText}>date added</TouchableOpacity>
+          <View style={styles.leftOptions}>
+            <Text style={styles.optionsText}>sort by:</Text>
+            <TouchableOpacity style={styles.optionsNav}>
+              <Text style={styles.navText}>date added</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.filterContainer}>
-            <Text style={styles.filterText}></Text>
-            <TouchableOpacity style={styles.filterButton}>    key    </TouchableOpacity>
-            <TouchableOpacity style={styles.filterButton}>  energy  </TouchableOpacity>
-            <TouchableOpacity style={styles.filterButton}>camelot</TouchableOpacity>
-            <TouchableOpacity style={styles.filterButton}>    bpm    </TouchableOpacity>
-          </View> */}
+          <View style={styles.rightOptions}>
+            <Text style={styles.optionsText}>filter by:</Text>
+            <TouchableOpacity style={styles.optionsButton}>
+              <Text style={styles.navText}>key</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionsButton}>
+              <Text style={styles.navText}>energy</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionsButton}>
+              <Text style={styles.navText}>camelot</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.optionsButton}>
+              <Text style={styles.navText}>bpm</Text>
+            </TouchableOpacity>
+          </View>
         </View>
+        <View style={styles.headBar}>
+          <View style={styles.leftBar}>
+            <Text style={styles.barText}>TRACK</Text>
+          </View>
+          <View style={styles.middleBar}>
+            <Text style={styles.barText}>ARTIST</Text>
+            <Text style={styles.barText}>ALBUM</Text>
+          </View>
+          <View style={styles.rightBar}>
+            <Text style={styles.barText}>KEY</Text>
+            <Text style={styles.barText}>ENERGY</Text>
+            <Text style={styles.barText}>CAMELOT</Text>
+            <Text style={styles.barText}>BPM</Text>
+          </View>
+        </View>
+        <TouchableOpacity style={styles.songList} onPress={()=>{this.props.navigation.navigate('Song')}}>
+          <View style={styles.songLeft}>
+          <Image source={require('../assets/images/in_your_head.jpeg')} style={styles.albumArtwork}/>
+            <Text style={styles.songText}>In Your Head - RL Grime Edit</Text>
+          </View>
+          <View style={styles.songMiddle}>
+            <Text style={styles.songText}>G Jones, RL Grime</Text>
+            <Text style={styles.songText}>In Your Head (RL Grime Edit)</Text>
+          </View>
+          <View style={styles.songRight}>
+            <View style={styles.rightLeft}>
+              <Text style={styles.songText}>B Major</Text>
+              <Text style={styles.songText}>10</Text>
+            </View>
+            <View style={styles.rightRight}>
+              <Text style={styles.songText}>1B</Text>
+              <Text style={styles.songText}>150</Text>
+            </View>
+          </View>
+
+        </TouchableOpacity>
       </ScrollView>
     </ImageBackground>
   );}
@@ -46,24 +92,129 @@ class Home extends Component {
 const styles = StyleSheet.create({
   optionsContainer:{
     flexDirection: 'row',
+    width:'95%',
+    height:'10%',
+    justifyContent:'space-between',
+    alignSelf:'center'
   },
-  sortContainer:{
-
+  leftOptions: {
+    display:'flex',
+    flexDirection:'row',
+    width:'50%',
+    height:'100%',
   },
-  filterContainer:{
-
+  optionsText: {
+    color:'white',
+    fontFamily:'spartan',
+    fontSize:14,
+    paddingRight: '1%'
   },
-  optionsLabel:{
-
+  optionsNav: {
+    width: '180%',
+    height:'auto',
+    padding:5,
+    backgroundColor:'#e5e5e5',
+    borderRadius:20,
   },
-  dropdownText:{
-
+  navText: {
+    color:'black',
+    fontSize:14,
+    textAlign:'center',
+    fontFamily: 'Spartan'
   },
-  filterButton:{
-
+  rightOptions: {
+    width:'30%',
+    flexDirection:'row',
+    justifyContent:'space-evenly',
+    alignContent:'flex-end',
   },
-  filterText:{
-
+  optionsButton: {
+    padding:5,
+    backgroundColor:'#e5e5e5',
+    width:90,
+    borderRadius:20,
+  },
+  headBar: {
+    borderWidth:1,
+    borderColor:'white',
+    width:'95%',
+    height:'auto',
+    padding:10,
+    flexDirection:'row',
+    alignSelf:'center',
+    marginTop:10,
+    justifyContent:'space-between',
+    // marginRight: 10
+  },
+  leftBar: {
+    width:140,
+    textAlign:'right',
+    marginLeft:10,
+  },
+  middleBar: {
+    width:260,
+    flexDirection:'row',
+    justifyContent:'space-between',
+    marginLeft:-45,
+  },
+  rightBar: {
+    width:360,
+    flexDirection:'row',
+    justifyContent:'space-between',
+  },
+  barText: {
+    color:'white',
+    fontSize:18,
+  },
+  songList: {
+    width:'95%',
+    height:'auto',
+    padding:10,
+    borderBottomWidth:1,
+    color:'white',
+    flexDirection:'row',
+    alignSelf:'center',
+    justifyContent:'space-between'
+  },
+  songLeft: {
+    width:240,
+    flexDirection:'row',
+    justifyContent:'space-between'
+  },
+  songMiddle: {
+    width:400,
+    flexDirection:'row',
+    justifyContent:'space-between',
+    textAlign:'left',
+  },
+  songRight: {
+    width:360,
+    flexDirection:'row',
+    textAlign:'left',
+  },
+  albumArtwork: {
+    width:100,
+    height:100,
+    marginRight: '4%',
+    marginLeft: '-4%'
+  },
+  songText: {
+    color:'white',
+    fontSize:16,
+    fontFamily:'spartan',
+    flex:1,
+  },
+  rightLeft: {
+    width:160,
+    flexDirection:'row',
+    justifyContent:'space-between',
+  },
+  rightRight: {
+    width:250,
+    marginLeft:35,
+    flexDirection:'row',
+    justifyContent:'space-between',
+    // marginRight:10
   },
   backgroundimage: {
     // flex: 1,
@@ -145,4 +296,4 @@ const styles = StyleSheet.create({
 
 })
 
-  export default Home;
+  export default Playlist;
