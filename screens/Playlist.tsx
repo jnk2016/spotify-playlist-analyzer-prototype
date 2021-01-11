@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     padding:10,
     flexDirection:'row',
     alignSelf:'center',
-    marginTop:10,
+    // marginTop:10,
     justifyContent:'space-between',
     // marginRight: 10
   },
