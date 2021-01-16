@@ -1,11 +1,14 @@
 import React, {Component, useState} from 'react';
-import {Button, Image, StyleSheet, TextInput, TouchableHighlight, Text, View, Alert, ScrollView, ImageBackground} from 'react-native';
+import {Button, Image, StyleSheet, TextInput, TouchableHighlight, Dimensions, Text, View, Alert, ScrollView, ImageBackground} from 'react-native';
 import Modal from 'modal-react-native-web';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {PieChart} from 'react-minimal-pie-chart';
 import axios from 'axios';
 import AxiosGetTrackAnalysis from '../Axios Functions/AxiosGetTrackAnalysis';
 
+const dimensions = Dimensions.get('window');
+const imageHeight = dimensions.height;
+const imageWidth = dimensions.width;
 class Song extends React.Component<{}, any> {
   constructor(props) {
     super(props)
@@ -73,8 +76,8 @@ class Song extends React.Component<{}, any> {
           <View style={{zIndex:4, opacity: .4,position: 'absolute', justifyContent: 'center', alignSelf: 'center', alignContent: 'center', alignItems: 'center', height: 400, width: 400}}>
             <PieChart style={{alignSelf: 'center', justifySelf: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center', verticalAlign: 'center'}}
               data={[
-                  { title: 'One', value: 25, color: '#D630FF' },
-                  { title: 'Two', value: 75, color: '#EEAAFF' },
+                  { title: 'One', value: Math.round(this.state.energy*100), color: '#D630FF' },
+                  { title: 'Two', value: 100-Math.round(this.state.energy*100), color: '#EEAAFF' },
                   // { title: 'Two', value: 85, color: '#FFF9C3' },
               ]} lineWidth={15} viewBoxSize={[100,100]} totalValue={200} startAngle={90}
             />
@@ -82,8 +85,8 @@ class Song extends React.Component<{}, any> {
           <View style={{zIndex:4, opacity: .4,position: 'absolute', justifyContent: 'center', alignSelf: 'center', alignContent: 'center', alignItems: 'center', height: 341, width: 341}}>
             <PieChart style={{alignSelf: 'center', justifySelf: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center', verticalAlign: 'center'}}
               data={[
-                  { title: 'One', value: 25, color: '#3E3BD6' },
-                  { title: 'Two', value: 75, color: '#8E8CD4' },
+                  { title: 'One', value: Math.round(this.state.valence*100), color: '#3E3BD6' },
+                  { title: 'Two', value: 100-Math.round(this.state.valence*100), color: '#8E8CD4' },
                   // { title: 'Two', value: 85, color: '#FFF9C3' },
               ]} lineWidth={16} viewBoxSize={[100,100]} totalValue={200} startAngle={90}
             />
@@ -91,8 +94,8 @@ class Song extends React.Component<{}, any> {
           <View style={{zIndex:4, opacity: .4,position: 'absolute', justifyContent: 'center', alignSelf: 'center', alignContent: 'center', alignItems: 'center', height: 287, width: 287}}>
             <PieChart style={{alignSelf: 'center', justifySelf: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center', verticalAlign: 'center'}}
               data={[
-                  { title: 'One', value: 25, color: '#7280FF' },
-                  { title: 'Two', value: 75, color: '#A5AEFF' },
+                  { title: 'One', value: Math.round(this.state.danceability*100), color: '#7280FF' },
+                  { title: 'Two', value: 100-Math.round(this.state.danceability*100), color: '#A5AEFF' },
                   // { title: 'Two', value: 85, color: '#FFF9C3' },
               ]} lineWidth={18} viewBoxSize={[100,100]} totalValue={200} startAngle={90}
             />
@@ -100,8 +103,8 @@ class Song extends React.Component<{}, any> {
           <View style={{zIndex:4, opacity: .4,position: 'absolute', justifyContent: 'center', alignSelf: 'center', alignContent: 'center', alignItems: 'center', height: 236, width: 236}}>
             <PieChart style={{alignSelf: 'center', justifySelf: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center', verticalAlign: 'center'}}
               data={[
-                  { title: 'One', value: 25, color: '#5BCC96' },
-                  { title: 'Two', value: 75, color: '#96EAC2' },
+                  { title: 'One', value: Math.round(this.state.acousticness*100), color: '#5BCC96' },
+                  { title: 'Two', value: 100-Math.round(this.state.acousticness*100), color: '#96EAC2' },
                   // { title: 'Two', value: 85, color: '#FFF9C3' },
               ]} lineWidth={21} viewBoxSize={[100,100]} totalValue={200} startAngle={90}
             />
@@ -109,8 +112,8 @@ class Song extends React.Component<{}, any> {
           <View style={{zIndex:4, opacity: .4,position: 'absolute', justifyContent: 'center', alignSelf: 'center', alignContent: 'center', alignItems: 'center', height: 186, width: 186}}>
             <PieChart style={{alignSelf: 'center', justifySelf: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center', verticalAlign: 'center'}}
               data={[
-                  { title: 'One', value: 25, color: '#FFE70F' },
-                  { title: 'Two', value: 75, color: '#FFF7B1' },
+                  { title: 'One', value: Math.round(this.state.instrumentalness*100), color: '#FFE70F' },
+                  { title: 'Two', value: 100-Math.round(this.state.instrumentalness*100), color: '#FFF7B1' },
                   // { title: 'Two', value: 85, color: '#FFF9C3' },
               ]} lineWidth={27} viewBoxSize={[100,100]} totalValue={200} startAngle={90}
             />
@@ -118,8 +121,8 @@ class Song extends React.Component<{}, any> {
           <View style={{zIndex:4, opacity: .4,position: 'absolute', justifyContent: 'center', alignSelf: 'center', alignContent: 'center', alignItems: 'center', height: 137, width: 137}}>
             <PieChart style={{alignSelf: 'center', justifySelf: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center', verticalAlign: 'center'}}
               data={[
-                  { title: 'One', value: 25, color: '#FF7A00' },
-                  { title: 'Two', value: 75, color: '#FFC48D' },
+                  { title: 'One', value: Math.round(this.state.speechiness*100), color: '#FF7A00' },
+                  { title: 'Two', value: 100-Math.round(this.state.speechiness*100), color: '#FFC48D' },
                   // { title: 'Two', value: 85, color: '#FFF9C3' },
               ]} lineWidth={34} viewBoxSize={[100,100]} totalValue={200} startAngle={90}
             />
@@ -127,8 +130,8 @@ class Song extends React.Component<{}, any> {
           <View style={{zIndex:4, opacity: .4,position: 'absolute', justifyContent: 'center', alignSelf: 'center', alignContent: 'center', alignItems: 'center', height: 91, width: 91}}>
             <PieChart style={{alignSelf: 'center', justifySelf: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center', verticalAlign: 'center'}}
               data={[
-                  { title: 'One', value: 25, color: '#FF0000' },
-                  { title: 'Two', value: 75, color: '#FF9696' },
+                  { title: 'One', value: Math.round(this.state.liveliness*100), color: '#FF0000' },
+                  { title: 'Two', value: 100-Math.round(this.state.liveliness*100), color: '#FF9696' },
                   // { title: 'Two', value: 85, color: '#FFF9C3' },
               ]} lineWidth={41} viewBoxSize={[100,100]} totalValue={200} startAngle={90}
             />
@@ -313,7 +316,8 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     // alignText: 'center',
     // alignContent: 'center',
-    height: '100%'
+    height: '100%',
+    // height: imageHeight-45,
   },
   spotifyButton:{
     backgroundColor: '#5BCC96',

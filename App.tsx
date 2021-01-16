@@ -1,31 +1,42 @@
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-gesture-handler';
 import React from 'react';
+import {View} from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
 import SideBar from './SideBar';
 import Home from './screens/Playlist';
 import MyTabs from './BottomTabNavigation/BottomTabNavigator';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import Playlist from './screens/Playlist';
+import Settings from './screens/Settings'
 
 export default function App({navigation}) {
   const isLoadingComplete = useCachedResources();
   const colorScheme = useColorScheme();
+  const Stack = createStackNavigator();
 
   if (!isLoadingComplete) {
     return null;
   } else {
     return (
-      <SafeAreaProvider>
+      <View>
        <MyTabs/>
 
-        <StatusBar />
+        {/* <StatusBar /> */}
 
         {/* <Home/> */}
 
+        {/* <NavigationContainer>
+            <Stack.Navigator >
+                <Stack.Screen name="Playlist" component={Playlist} />
+                <Stack.Screen name="Settings" component={Settings} />
+            </Stack.Navigator>
+        </NavigationContainer> */}
 
-
-      </SafeAreaProvider>
+      </View>
     //   <div className="App">
     //     <html lang="en">
     // <head>

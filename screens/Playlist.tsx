@@ -4,15 +4,16 @@ import Modal from 'modal-react-native-web';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import AxiosGetToken from '../Axios Functions/AxiosGetToken';
+import {Picker} from '@react-native-community/picker';
 
 //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ  7am: 0fCpH2h614ebCnRW4Wmy9L
-const playlistUriCode = '0fCpH2h614ebCnRW4Wmy9L';  
+const playlistUriCode = '1HhAiDpmQdi5ryyFjzjlyD';  
 // const AuthToken = 
 // 'BQBQ9g_nIuPFlZGDYKc1MH05xg8o51W0SLxdibSDgXxCMhfvbIGX9zNNnyBGtHBojgr-7tVJtnGPUyp8R0w3sTVQ-XyaeJJM1WRxrb3_wC3XHIfBl12Es2pyq9v8elYEyNDgrUibMcFQ2X4'
 // ;
-// const dimensions = Dimensions.get('window');
-// const imageHeight = dimensions.width;
-// const imageWidth = dimensions.width;
+const dimensions = Dimensions.get('window');
+const imageHeight = dimensions.height;
+const imageWidth = dimensions.width;
 
 function determineKey(key){
   if(key == 0)      {return 'C'}
@@ -41,6 +42,7 @@ class PlaylistItems extends React.Component<{}, any>{
       TrackAmount: '',
       TrackDetails: [],
       AuthToken: '',
+      selectedValue:'date added',
     };
   }
 
@@ -114,8 +116,9 @@ class PlaylistItems extends React.Component<{}, any>{
             artists: track.track.artists[0].name,
             album: track.track.album.name,
             bpm: Math.round(songFeatures.tempo),
+            keyNum: songFeatures.key,
             key: keyString,
-            energy: Math.round(songFeatures.energy * 10),
+            energy: songFeatures.energy,
             timeSig: songFeatures.time_signature,
             duration: dur,
             id: track.track.id,
@@ -177,7 +180,7 @@ class PlaylistItems extends React.Component<{}, any>{
               {/* <View style={styles.rightLeft}> */}
                 <Text style={styles.songText}>{song.duration}</Text>
                 <Text style={styles.songText}>{song.key}</Text>
-                <Text style={styles.songText}>{song.energy}</Text>
+                <Text style={styles.songText}>{Math.round(song.energy * 10)}</Text>
               {/* </View> */}
               {/* <View style={styles.rightRight}> */}
                 <Text style={styles.songText}>{song.bpm}</Text>
@@ -192,9 +195,157 @@ class PlaylistItems extends React.Component<{}, any>{
       console.log(err);
     }
   }
+
+  sortPlaylist = sortMethod => {
+    if(sortMethod == 'bpm'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.bpm > b.bpm) ? 1 : -1)
+    })}
+    else if(sortMethod == 'key'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.keyNum > b.keyNum) ? 1 : -1)
+    })}
+    else if(sortMethod == 'energy'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.energy > b.energy) ? 1 : -1)
+    })}
+    else if(sortMethod == 'name'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.name > b.name) ? 1 : -1)
+    })}
+    else if(sortMethod == 'artists'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.artists > b.artists) ? 1 : -1)
+    })}
+    this.setState({
+      BasicInfo: this.state.TrackDetails.map((song,i) => {
+        return(
+        <TouchableOpacity style={styles.songList} onPress={()=>{
+            this.props.navigation.navigate('Song', {
+              token: this.state.AuthToken,
+              songID:song.id,
+              artwork: song.artwork,
+              name: song.name,
+              artists: song.artists,
+              album: song.album,
+              duration: song.duration,
+              key: song.key,
+              timeSig: song.timeSig,
+              bpm: song.bpm,
+              popularity: song.popularity,
+              mode: song.mode,
+              // in depth audio features
+              valence: song.valence,
+              liveliness: song.liveliness,
+              speechiness: song.speechiness,
+              instrumentalness: song.instrumentalness,
+              energy: song.energy,
+              danceability: song.danceability,
+              acousticness: song.acousticness,
+            })
+          }} key={i}>
+          <View style={styles.songLeft}>
+          <Image source={{uri: song.artwork}} style={styles.albumArtwork}/>
+            <Text style={styles.songTextTrack}>{song.name}</Text>
+          </View>
+          <View style={styles.songMiddle}>
+            <Text style={styles.songTextArtist}>{song.artists}</Text>
+            <Text style={styles.songTextAlbum}>{song.album}</Text>
+          </View>
+          <View style={styles.songRight}>
+            {/* <View style={styles.rightLeft}> */}
+              <Text style={styles.songText}>{song.duration}</Text>
+              <Text style={styles.songText}>{song.key}</Text>
+              <Text style={styles.songText}>{Math.round(song.energy * 10)}</Text>
+            {/* </View> */}
+            {/* <View style={styles.rightRight}> */}
+              <Text style={styles.songText}>{song.bpm}</Text>
+              <Text style={styles.songText}>{song.timeSig}</Text>
+            {/* </View> */}
+          </View>
+        </TouchableOpacity>
+      )})
+    })
+  }
+
+  filterPlaylist = (filterMethod, params) => {
+    if(filterMethod == 'key'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.bpm > b.bpm) ? 1 : -1)
+    })}
+    else if(filterMethod == 'energy'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.keyNum > b.keyNum) ? 1 : -1)
+    })}
+    else if(filterMethod == 'time sig.'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.energy > b.energy) ? 1 : -1)
+    })}
+    else if(filterMethod == 'bpm'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.name > b.name) ? 1 : -1)
+    })}
+    else if(filterMethod == 'artists'){
+    this.setState({
+      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.artists > b.artists) ? 1 : -1)
+    })}
+    this.setState({
+      BasicInfo: this.state.TrackDetails.map((song,i) => {
+        return(
+        <TouchableOpacity style={styles.songList} onPress={()=>{
+            this.props.navigation.navigate('Song', {
+              token: this.state.AuthToken,
+              songID:song.id,
+              artwork: song.artwork,
+              name: song.name,
+              artists: song.artists,
+              album: song.album,
+              duration: song.duration,
+              key: song.key,
+              timeSig: song.timeSig,
+              bpm: song.bpm,
+              popularity: song.popularity,
+              mode: song.mode,
+              // in depth audio features
+              valence: song.valence,
+              liveliness: song.liveliness,
+              speechiness: song.speechiness,
+              instrumentalness: song.instrumentalness,
+              energy: song.energy,
+              danceability: song.danceability,
+              acousticness: song.acousticness,
+            })
+          }} key={i}>
+          <View style={styles.songLeft}>
+          <Image source={{uri: song.artwork}} style={styles.albumArtwork}/>
+            <Text style={styles.songTextTrack}>{song.name}</Text>
+          </View>
+          <View style={styles.songMiddle}>
+            <Text style={styles.songTextArtist}>{song.artists}</Text>
+            <Text style={styles.songTextAlbum}>{song.album}</Text>
+          </View>
+          <View style={styles.songRight}>
+            {/* <View style={styles.rightLeft}> */}
+              <Text style={styles.songText}>{song.duration}</Text>
+              <Text style={styles.songText}>{song.key}</Text>
+              <Text style={styles.songText}>{Math.round(song.energy * 10)}</Text>
+            {/* </View> */}
+            {/* <View style={styles.rightRight}> */}
+              <Text style={styles.songText}>{song.bpm}</Text>
+              <Text style={styles.songText}>{song.timeSig}</Text>
+            {/* </View> */}
+          </View>
+        </TouchableOpacity>
+      )})
+    })
+  }
+
   render(){return (
-    <ImageBackground source = {{uri:this.state.ImageUrl}} style = {styles.backgroundimage} blurRadius= {200}>
-      <ScrollView>
+    // <View style={{
+    //   height: imageHeight-45,
+    //   }}>
+    <ImageBackground source = {{uri:this.state.ImageUrl}} style = {styles.backgroundimage} imageStyle={{resizeMode:'cover'}} blurRadius= {200}>
+      <ScrollView style = {{paddingBottom:'3%'}}>
         <View style={styles.headerContainer}>
           <View style={styles.playlistContainer}>
             <View style={styles.playArtContainer}>
@@ -214,9 +365,19 @@ class PlaylistItems extends React.Component<{}, any>{
         <View style={styles.optionsContainer}>
           <View style={styles.leftOptions}>
             <Text style={styles.optionsText}>sort by:</Text>
-            <TouchableOpacity style={styles.optionsNav}>
+            {/* <TouchableOpacity style={styles.optionsNav} onPress={()=>(this.sortPlaylist('name'))}>
               <Text style={styles.navText}>date added</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            <Picker style={styles.optionsNav} selectedValue={this.state.selectedValue} onValueChange={(itemValue,itemIndex) =>{
+              this.setState({selectedValue:itemValue});
+              this.sortPlaylist(itemValue);
+              }}>
+              <Picker.Item label = "bpm" value = "bpm"/>
+              <Picker.Item label = "key" value = "key"/>
+              <Picker.Item label = "energy" value = "energy"/>
+              <Picker.Item label = "name" value = "name"/>
+              <Picker.Item label = "artists" value = "artists"/>
+            </Picker>
           </View>
           <View style={styles.rightOptions}>
             <Text style={styles.optionsText}>filter by:</Text>
@@ -227,10 +388,10 @@ class PlaylistItems extends React.Component<{}, any>{
               <Text style={styles.navText}>energy</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionsButton}>
-              <Text style={styles.navText}>time sig.</Text>
+              <Text style={styles.navText}>bpm</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionsButton}>
-              <Text style={styles.navText}>bpm</Text>
+              <Text style={styles.navText}>time sig.</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -255,6 +416,7 @@ class PlaylistItems extends React.Component<{}, any>{
 
       </ScrollView>
     </ImageBackground>
+    // </View>
   );
   }
 }
@@ -287,7 +449,7 @@ const styles = StyleSheet.create({
     paddingRight: '1%'
   },
   optionsNav: {
-    width: '180%',
+    width: '20%',
     height:'auto',
     padding:5,
     backgroundColor:'#e5e5e5',
@@ -442,13 +604,16 @@ const styles = StyleSheet.create({
     // marginRight:10
   },
   backgroundimage: {
-    // flex: 1,
-    resizeMode: 'cover',
-    // justifyContent: "center",
+    flex: 1,
+    resizeMode: 'contain',
+    // minWidth: imageWidth,
+    // // resizeMethod: 'resize',
+    justifyContent: "center",
     // alignItems: 'center',
     // alignText: 'center',
     // alignContent: 'center',
-    height: '100%',
+    // height: '100%',
+    // height: imageHeight-45,
   },
   headerContainer:{
     flexDirection: 'row',
