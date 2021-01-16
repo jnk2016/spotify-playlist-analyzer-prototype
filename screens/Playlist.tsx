@@ -1,8 +1,31 @@
 import React, {Component, useState} from 'react';
-import {Button, Image, StyleSheet, TextInput, TouchableHighlight, Text, View, Alert, ScrollView, ImageBackground} from 'react-native';
+import {Button, Image, StyleSheet, Dimensions, TextInput, TouchableHighlight, Text, View, Alert, ScrollView, ImageBackground} from 'react-native';
 import Modal from 'modal-react-native-web';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
+
+const playlistUriCode = '1HhAiDpmQdi5ryyFjzjlyD';  //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ
+const AuthToken = 
+'BQBQ9g_nIuPFlZGDYKc1MH05xg8o51W0SLxdibSDgXxCMhfvbIGX9zNNnyBGtHBojgr-7tVJtnGPUyp8R0w3sTVQ-XyaeJJM1WRxrb3_wC3XHIfBl12Es2pyq9v8elYEyNDgrUibMcFQ2X4'
+;
+const dimensions = Dimensions.get('window');
+const imageHeight = dimensions.width;
+const imageWidth = dimensions.width;
+
+function determineKey(key){
+  if(key == 0)      {return 'C'}
+  else if(key == 1) {return 'C♯ / D♭'}
+  else if(key == 2) {return 'D'}
+  else if(key == 3) {return 'D♯ / E♭'}
+  else if(key == 4) {return 'E'}
+  else if(key == 5) {return 'F'}
+  else if(key == 6) {return 'F♯ / G♭'}
+  else if(key == 7) {return 'G'}
+  else if(key == 8) {return 'G♯ / A♭'}
+  else if(key == 9) {return 'A'}
+  else if(key == 10){return 'A♯ / B♭'}
+  else if(key == 11){return 'B'}
+}
 
 class PlaylistItems extends React.Component<{}, any>{
   constructor(props) {
@@ -14,6 +37,7 @@ class PlaylistItems extends React.Component<{}, any>{
       Owner: '',
       Descrip: '',
       TrackAmount: '',
+      TrackDetails: [],
     };
   }
 
@@ -24,24 +48,59 @@ class PlaylistItems extends React.Component<{}, any>{
     try{
       let playlist = await axios({
       method: 'get',
-      url:'https://api.spotify.com/v1/playlists/4y7pEAyFZCDl2fW8SHrEKJ',  //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ
+      url:`https://api.spotify.com/v1/playlists/${playlistUriCode}`,
       headers: {
-        Authorization: 'Bearer BQCNxJOPPILhOVjCzT8kiD4LBeVRahvy_Mtkm4XSZXSR3DtCi6zCPYdK5REU7m--EbevMtO_Z-9ojKfAY4T-6NTzQKjAE-omYuz1VHkVoXG5DmFGD8D1-q19fNSm-qPP8h6xD93l1AKhLoc'
+        Authorization: `Bearer ${AuthToken}`
       },
       })
       .then(response=>{
           console.log(response.data);
-          // console.log(response.data.statements);
-          // console.log(response.data.statements[1]);
           
           return response.data;
-          // return response.data;
       })
       .catch(err =>{
           console.log(err, err.response);
           return err.response;
       });
-      
+
+      this.setState({
+        TrackDetails: await Promise.all(playlist.tracks.items.map(async(track) =>{
+          let songFeatures = await axios({
+            method: 'get',
+            url:`https://api.spotify.com/v1/audio-features/${track.track.id}`,  //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ
+            headers: {
+              Authorization: `Bearer ${AuthToken}`
+            },
+            })
+            .then(response=>{
+                console.log(response.data);
+                
+                return response.data;
+            })
+            .catch(err =>{
+                console.log(err, err.response);
+                return err.response;
+            });
+          // let roundedBpm = songFeatures.tempo.round();
+          let keyString = determineKey(songFeatures.key);
+          let minutes = Math.floor(track.track.duration_ms/60000);
+          let seconds = Math.round((track.track.duration_ms - (60000*minutes))/1000);
+          let dur = `${minutes}:${seconds}`;
+          if(seconds<10){dur = `${minutes}:0${seconds}`;}
+          return({
+            artwork: track.track.album.images[1].url,
+            name: track.track.name,
+            artists: track.track.artists[0].name,
+            album: track.track.album.name,
+            bpm: Math.round(songFeatures.tempo),
+            key: keyString,
+            energy: Math.round(songFeatures.energy * 10),
+            timeSig: songFeatures.time_signature,
+            duration: dur,
+        });
+      })),
+      })
+
       this.setState({
         Name: playlist.name,
         ImageUrl: playlist.images[0].url,
@@ -49,28 +108,31 @@ class PlaylistItems extends React.Component<{}, any>{
         Descrip: playlist.description,
         TrackAmount: playlist.tracks.total,
 
-        BasicInfo: playlist.tracks.items.map((song, i) => (
-          <TouchableOpacity style={styles.songList} onPress={()=>{this.props.navigation.navigate('Song')}}>
+        BasicInfo: this.state.TrackDetails.map((song, i) => {
+          return(
+          <TouchableOpacity style={styles.songList} onPress={()=>{this.props.navigation.navigate('Song')}} key={i}>
             <View style={styles.songLeft}>
-            <Image source={{uri: song.track.album.images[1].url}} style={styles.albumArtwork}/>
-              <Text style={styles.songText}>{song.track.name}</Text>
+            <Image source={{uri: song.artwork}} style={styles.albumArtwork}/>
+              <Text style={styles.songTextTrack}>{song.name}</Text>
             </View>
             <View style={styles.songMiddle}>
-              <Text style={styles.songText}>{song.track.artists[0].name}</Text>
-              <Text style={styles.songText}>{song.track.album.name}</Text>
+              <Text style={styles.songTextArtist}>{song.artists}</Text>
+              <Text style={styles.songTextAlbum}>{song.album}</Text>
             </View>
             <View style={styles.songRight}>
-              <View style={styles.rightLeft}>
-                <Text style={styles.songText}>B Major</Text>
-                <Text style={styles.songText}>10</Text>
-              </View>
-              <View style={styles.rightRight}>
-                <Text style={styles.songText}>1B</Text>
-                <Text style={styles.songText}>150</Text>
-              </View>
+              {/* <View style={styles.rightLeft}> */}
+                <Text style={styles.songText}>{song.duration}</Text>
+                <Text style={styles.songText}>{song.key}</Text>
+                <Text style={styles.songText}>{song.energy}</Text>
+              {/* </View> */}
+              {/* <View style={styles.rightRight}> */}
+                <Text style={styles.songText}>{song.bpm}</Text>
+                <Text style={styles.songText}>{song.timeSig}</Text>
+              {/* </View> */}
             </View>
           </TouchableOpacity>
-        ))
+        )})
+
       });
     }catch (err) {
       console.log(err);
@@ -111,7 +173,7 @@ class PlaylistItems extends React.Component<{}, any>{
               <Text style={styles.navText}>energy</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionsButton}>
-              <Text style={styles.navText}>camelot</Text>
+              <Text style={styles.navText}>time sig.</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionsButton}>
               <Text style={styles.navText}>bpm</Text>
@@ -123,14 +185,15 @@ class PlaylistItems extends React.Component<{}, any>{
             <Text style={styles.barText}>TRACK</Text>
           </View>
           <View style={styles.middleBar}>
-            <Text style={styles.barText}>ARTIST</Text>
+            <Text style={styles.barTextArtist}>ARTIST</Text>
             <Text style={styles.barText}>ALBUM</Text>
           </View>
           <View style={styles.rightBar}>
+            <Text style={styles.barText}>DUR.</Text>
             <Text style={styles.barText}>KEY</Text>
             <Text style={styles.barText}>ENERGY</Text>
-            <Text style={styles.barText}>CAMELOT</Text>
             <Text style={styles.barText}>BPM</Text>
+            <Text style={styles.barText}>TIME SIG.</Text>
           </View>
         </View>
 
@@ -207,28 +270,42 @@ const styles = StyleSheet.create({
     // marginRight: 10
   },
   leftBar: {
-    width:140,
-    textAlign:'right',
-    marginLeft:10,
+    // width:142,
+    width:'26%',
+    paddingLeft: '7%',
+    // textAlign:'right',
+    // marginLeft:10,
   },
   middleBar: {
-    width:260,
+    // width:260,
+    width:'35%',
     flexDirection:'row',
-    justifyContent:'space-between',
-    marginLeft:-45,
+    // justifyContent:'space-between',
+    // marginLeft:-45, // Going to start making edits
   },
   rightBar: {
-    width:360,
+    // width:420,
+    width:'36%',
     flexDirection:'row',
     justifyContent:'space-between',
   },
   barText: {
     color:'white',
     fontSize:18,
+    fontWeight: '700',
+    flex:1
+  },
+  barTextArtist: {
+    color:'white',
+    fontSize:18,
+    fontWeight: '700',
+    flex: 1,
+    paddingRight: '2%'
   },
   songList: {
     width:'95%',
-    height:'auto',
+    // height:'100%',
+    height: 110,
     padding:10,
     borderBottomWidth:1,
     color:'white',
@@ -237,26 +314,52 @@ const styles = StyleSheet.create({
     justifyContent:'space-between'
   },
   songLeft: {
-    width:240,
-    flexDirection:'row',
-    justifyContent:'space-between'
-  },
-  songMiddle: {
-    width:400,
+    // width:240,
+    width: '26%',
     flexDirection:'row',
     justifyContent:'space-between',
+  },
+  songMiddle: {
+    // width:400,
+    width: '35%',
+    flexDirection:'row',
+    // justifyContent:'space-between',
     textAlign:'left',
+    // marginLeft: '2%',
   },
   songRight: {
-    width:360,
+    // width:360,
+    width: '36%',
     flexDirection:'row',
     textAlign:'left',
   },
   albumArtwork: {
-    width:100,
-    height:100,
-    marginRight: '4%',
-    marginLeft: '-4%'
+    width:'25%',
+    height:'100%',
+    // paddingRight: '2%',
+    // width:imageHeight/19,
+    // height:imageWidth/19,
+    // marginRight: '4%',
+    // marginLeft: '-4%',
+    resizeMode: 'contain',
+  },
+  songTextArtist: {
+    color:'white',
+    fontSize:16,
+    fontFamily:'spartan',
+    flex:1,
+    // width: '100%',
+    // paddingHorizontal: '2%',
+    // paddingLeft: '2%',
+    paddingRight: '2%',
+  },
+  songTextAlbum: {
+    color:'white',
+    fontSize:16,
+    fontFamily:'spartan',
+    flex:1,
+    // width: '80%',
+    // marginLeft: '9%',
   },
   songText: {
     color:'white',
@@ -264,13 +367,21 @@ const styles = StyleSheet.create({
     fontFamily:'spartan',
     flex:1,
   },
-  rightLeft: {
-    width:160,
+  songTextTrack: {
+    color:'white',
+    fontSize:16,
+    fontFamily:'spartan',
+    flex:1,
+    width: '80%',
+    paddingHorizontal: '2%',
+  },
+  rightLeft: {  // dur, key, energy
+    // width:160,
     flexDirection:'row',
     justifyContent:'space-between',
   },
-  rightRight: {
-    width:250,
+  rightRight: { // bpm, timeSig
+    // width:250,
     marginLeft:35,
     flexDirection:'row',
     justifyContent:'space-between',
