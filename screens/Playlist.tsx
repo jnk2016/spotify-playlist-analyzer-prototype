@@ -4,12 +4,16 @@ import Modal from 'modal-react-native-web';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 
-export default function Playlist ({navigation}){
 class PlaylistItems extends React.Component<{}, any>{
   constructor(props) {
     super(props)
     this.state = {
       BasicInfo: [],
+      Name: '',
+      ImageUrl: '',
+      Owner: '',
+      Descrip: '',
+      TrackAmount: '',
     };
   }
 
@@ -18,11 +22,11 @@ class PlaylistItems extends React.Component<{}, any>{
   }
   renderValues= async() =>{
     try{
-      let songs = await axios({
+      let playlist = await axios({
       method: 'get',
-      url:'https://api.spotify.com/v1/playlists/4y7pEAyFZCDl2fW8SHrEKJ',
+      url:'https://api.spotify.com/v1/playlists/4y7pEAyFZCDl2fW8SHrEKJ',  //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ
       headers: {
-        Authorization: 'Bearer BQB2Ai1-Lz-pfQPtcskob2XOjbSYxJEpoHxQYVzsIKKW60DSgJmY3PfKRxO2yySH-PSBMxxr_nPlb47Mio5f9tK_XnTt58MQQvJe0Ed5Xp9UHYPLhaA1NKsMpfVPksJGu4m77oqylfsC9bw'
+        Authorization: 'Bearer BQCNxJOPPILhOVjCzT8kiD4LBeVRahvy_Mtkm4XSZXSR3DtCi6zCPYdK5REU7m--EbevMtO_Z-9ojKfAY4T-6NTzQKjAE-omYuz1VHkVoXG5DmFGD8D1-q19fNSm-qPP8h6xD93l1AKhLoc'
       },
       })
       .then(response=>{
@@ -30,24 +34,30 @@ class PlaylistItems extends React.Component<{}, any>{
           // console.log(response.data.statements);
           // console.log(response.data.statements[1]);
           
-          return response.data.tracks.items;
+          return response.data;
           // return response.data;
       })
       .catch(err =>{
           console.log(err, err.response);
           return err.response;
       });
-      var count = 0;
+      
       this.setState({
-        BasicInfo: songs.map((song, i) => (
-          <TouchableOpacity style={styles.songList} onPress={()=>{navigation.navigate('Song')}}>
+        Name: playlist.name,
+        ImageUrl: playlist.images[0].url,
+        Owner: playlist.owner.display_name,
+        Descrip: playlist.description,
+        TrackAmount: playlist.tracks.total,
+
+        BasicInfo: playlist.tracks.items.map((song, i) => (
+          <TouchableOpacity style={styles.songList} onPress={()=>{this.props.navigation.navigate('Song')}}>
             <View style={styles.songLeft}>
             <Image source={{uri: song.track.album.images[1].url}} style={styles.albumArtwork}/>
-              <Text style={styles.songText}>In Your Head - RL Grime Edit</Text>
+              <Text style={styles.songText}>{song.track.name}</Text>
             </View>
             <View style={styles.songMiddle}>
               <Text style={styles.songText}>{song.track.artists[0].name}</Text>
-              <Text style={styles.songText}>{song.track.name}</Text>
+              <Text style={styles.songText}>{song.track.album.name}</Text>
             </View>
             <View style={styles.songRight}>
               <View style={styles.rightLeft}>
@@ -66,32 +76,19 @@ class PlaylistItems extends React.Component<{}, any>{
       console.log(err);
     }
   }
-  render(){
-    return(
-      <View>
-        {this.state.BasicInfo}
-      </View>
-    );
-  }
-}
-const [a, handleA] = useState(true);
-
-// class Playlist extends Component {
-
-//   render() {
-    return (
-    <ImageBackground source = {{uri:require('../assets/images/planet_earth_7am.jpg')}} style = {styles.backgroundimage} blurRadius= {200}>
+  render(){return (
+    <ImageBackground source = {{uri:this.state.ImageUrl}} style = {styles.backgroundimage} blurRadius= {200}>
       <ScrollView>
         <View style={styles.headerContainer}>
           <View style={styles.playlistContainer}>
-            {/* <View style={{width:'100%'}}> */}
-              <Image source={require('../assets/images/planet_earth_7am.jpg')} style={styles.playlistArtwork}/>
-            {/* </View> */}
+            <View style={styles.playArtContainer}>
+              <Image source={{uri: this.state.ImageUrl}} style={styles.playlistArtwork}/>
+            </View>
             <View style={styles.playlistInfo}>
-              <Text style={styles.playlistName}>7AM PLANET EARTH</Text>
-              <Text style={styles.playlistUser}>by Jackson Kim</Text>
-              <Text style={styles.playlistDesc}>Pointless all nighter, monster, blue planet, tandat and blai, good vibes</Text>
-              <Text style={styles.trackAmount}>100 Tracks</Text>
+              <Text style={styles.playlistName}>{this.state.Name}</Text>
+              <Text style={styles.playlistUser}>by {this.state.Owner}</Text>
+              <Text style={styles.playlistDesc}>{this.state.Descrip}</Text>
+              <Text style={styles.trackAmount}>{this.state.TrackAmount} Tracks</Text>
             </View>
           </View>
           <TouchableOpacity style={styles.spotifyButton}>
@@ -137,32 +134,18 @@ const [a, handleA] = useState(true);
           </View>
         </View>
 
-        <PlaylistItems/>
-
-        {/* <TouchableOpacity style={styles.songList} onPress={()=>{this.props.navigation.navigate('Song')}}>
-          <View style={styles.songLeft}>
-          <Image source={require('../assets/images/in_your_head.jpeg')} style={styles.albumArtwork}/>
-            <Text style={styles.songText}>In Your Head - RL Grime Edit</Text>
-          </View>
-          <View style={styles.songMiddle}>
-            <Text style={styles.songText}>G Jones, RL Grime</Text>
-            <Text style={styles.songText}>In Your Head (RL Grime Edit)</Text>
-          </View>
-          <View style={styles.songRight}>
-            <View style={styles.rightLeft}>
-              <Text style={styles.songText}>B Major</Text>
-              <Text style={styles.songText}>10</Text>
-            </View>
-            <View style={styles.rightRight}>
-              <Text style={styles.songText}>1B</Text>
-              <Text style={styles.songText}>150</Text>
-            </View>
-          </View>
-        </TouchableOpacity> */}
+        {this.state.BasicInfo}
 
       </ScrollView>
     </ImageBackground>
-  );}
+  );
+  }
+}
+
+// class Playlist extends Component {
+
+//   render() {
+    
 
 // }
 
@@ -170,7 +153,7 @@ const styles = StyleSheet.create({
   optionsContainer:{
     flexDirection: 'row',
     width:'95%',
-    height:'10%',
+    paddingVertical: 5,
     justifyContent:'space-between',
     alignSelf:'center'
   },
@@ -300,14 +283,15 @@ const styles = StyleSheet.create({
     // alignItems: 'center',
     // alignText: 'center',
     // alignContent: 'center',
-    height: '100%'
+    height: '100%',
   },
   headerContainer:{
     flexDirection: 'row',
-    width: '90%',
+    width: '95%',
     // alignItems: 'center',
     alignSelf: 'center',
     justifyContent: 'space-between',
+    marginVertical: '1%'
   },
   spotifyButton:{
     backgroundColor: '#5BCC96',
@@ -332,10 +316,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     // justifyContent: 'space-between',
   },
+  playArtContainer:{
+    width:200,
+    height:200,
+    // paddingVertical: '5%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   playlistArtwork:{
-    // width: '30%',
-    // height:'100%', 
-    padding: '25%',
+    width: '100%',
+    height: '100%', 
+    // padding: '100%',
     resizeMode: 'contain',
     // marginLeft: '4%',
     // resizeMethod:'auto'
@@ -343,8 +334,8 @@ const styles = StyleSheet.create({
   playlistInfo:{
     justifyContent: 'space-evenly',
     flexDirection: 'column',
-    paddingVertical: '10%',
-    marginLeft: '4%',
+    // paddingVertical: '10%',
+    marginLeft: 10,
     width: '100%'
   },
   playlistName:{
@@ -373,4 +364,4 @@ const styles = StyleSheet.create({
 
 })
 
-// export default Playlist;
+export default PlaylistItems;
