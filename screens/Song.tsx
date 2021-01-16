@@ -3,18 +3,73 @@ import {Button, Image, StyleSheet, TextInput, TouchableHighlight, Text, View, Al
 import Modal from 'modal-react-native-web';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import {PieChart} from 'react-minimal-pie-chart';
+import axios from 'axios';
+import AxiosGetTrackAnalysis from '../Axios Functions/AxiosGetTrackAnalysis';
 
-class Song extends Component {
+class Song extends React.Component<{}, any> {
+  constructor(props) {
+    super(props)
+    this.state = {
+      token: this.props.route.params.token,
+      /* Basic Song Info */
+      id: this.props.route.params.songID,
+      artwork: this.props.route.params.artwork,
+      name: this.props.route.params.name,
+      artists: this.props.route.params.artists,
+      album: this.props.route.params.album,
+      /* Slightly More Detail */
+      duration: this.props.route.params.duration,
+      popularity: this.props.route.params.popularity,
+      key: this.props.route.params.key,
+      bars: '', // Not included in route params
+      mode: this.props.route.params.mode,
+      beats: '',  // Not included in route params
+      timeSig: this.props.route.params.timeSig,
+      sections: '', // Not included in route params
+      bpm: this.props.route.params.bpm,
+      segments: '', // Not included in route params
+      /* In Depth Detail */
+      valence: this.props.route.params.valence,
+      liveliness: this.props.route.params.liveliness,
+      speechiness: this.props.route.params.speechiness,
+      instrumentalness: this.props.route.params.instrumentalness,
+      energy: this.props.route.params.energy,
+      danceability: this.props.route.params.danceability,
+      acousticness: this.props.route.params.acousticness,
+    };
+  }
+
+  componentDidMount() {
+    this.renderValues();
+  }
+
+  renderValues = async() =>{
+    this.setState({
+      token: this.props.route.params.token,
+      id: this.props.route.params.songID,
+    });
+    try{
+      let trackAnalysis = await AxiosGetTrackAnalysis.GetTrackAnalysis(this.state.id, this.state.token);
+      this.setState({
+        bars: trackAnalysis.bars.length,
+        beats: trackAnalysis.beats.length,
+        sections: trackAnalysis.sections.length,
+        segments: trackAnalysis.segments.length,
+      })
+    }catch (err) {
+      console.log(err);
+    }
+  }
 
   render() {return (
-    <ImageBackground source = {{uri:require('../assets/images/in_your_head.jpeg')}} style = {styles.backgroundimage} blurRadius= {200}>
+    <ImageBackground source = {{uri:this.state.artwork}} style = {styles.backgroundimage} blurRadius= {200}>
       {/* <ScrollView> */}
         <TouchableOpacity style={styles.spotifyButton}>
           <Text style={styles.buttonText}>PLAY ON SPOTIFY</Text>
         </TouchableOpacity>
         <View style={{justifyContent: 'center'}}>
           {/* <View style={styles.circleImage}> */}
-          <Image source={require('../assets/images/in_your_head.jpeg')} style={{ height: 500, width: 500, resizeMode: 'contain', alignSelf: 'center', borderRadius: 500, zIndex: 2,}} blurRadius={20}/>
+          <Image source={{uri: this.state.artwork}} style={{ height: 500, width: 500, resizeMode: 'contain', alignSelf: 'center', borderRadius: 500, zIndex: 2,}} blurRadius={20}/>
           <View style={{zIndex:4, opacity: .4,position: 'absolute', justifyContent: 'center', alignSelf: 'center', alignContent: 'center', alignItems: 'center', height: 400, width: 400}}>
             <PieChart style={{alignSelf: 'center', justifySelf: 'center', justifyItems: 'center', alignContent: 'center', alignItems: 'center', verticalAlign: 'center'}}
               data={[
@@ -79,90 +134,90 @@ class Song extends Component {
             />
           </View>
           <View style={{zIndex:5,position: 'absolute', alignSelf: 'auto', height: 400, justifyContent: 'space-between', marginLeft: '51%'}}>
-            <Text style={styles.graphValues}>valence</Text>
-            <Text style={styles.graphValues}>0.734</Text>
+            <Text style={styles.graphValues}>energy</Text>
+            <Text style={styles.graphValues}>{this.state.energy}</Text>
           </View>
           <View style={{zIndex:5,position: 'absolute', alignSelf: 'auto', height: 341, justifyContent: 'space-between', marginLeft: '51%'}}>
-            <Text style={styles.graphValues}>liveliness</Text>
-            <Text style={styles.graphValues}>0.734</Text>
+            <Text style={styles.graphValues}>valence</Text>
+            <Text style={styles.graphValues}>{this.state.valence}</Text>
           </View>
           <View style={{zIndex:5,position: 'absolute', alignSelf: 'auto', height: 287, justifyContent: 'space-between', marginLeft: '51%'}}>
-            <Text style={styles.graphValues}>speechiness</Text>
-            <Text style={styles.graphValues}>0.734</Text>
+            <Text style={styles.graphValues}>danceability</Text>
+            <Text style={styles.graphValues}>{this.state.danceability}</Text>
           </View>
           <View style={{zIndex:5,position: 'absolute', alignSelf: 'auto', height: 236, justifyContent: 'space-between', marginLeft: '51%'}}>
-            <Text style={styles.graphValues}>instrumentalness</Text>
-            <Text style={styles.graphValues}>0.734</Text>
+            <Text style={styles.graphValues}>acousticness</Text>
+            <Text style={styles.graphValues}>{this.state.acousticness}</Text>
           </View>
           <View style={{zIndex:5,position: 'absolute', alignSelf: 'auto', height: 186, justifyContent: 'space-between', marginLeft: '51%'}}>
-            <Text style={styles.graphValues}>energy</Text>
-            <Text style={styles.graphValues}>0.734</Text>
+            <Text style={styles.graphValues}>instrumentalness</Text>
+            <Text style={styles.graphValues}>{this.state.instrumentalness}</Text>
           </View>
           <View style={{zIndex:5,position: 'absolute', alignSelf: 'auto', height: 137, justifyContent: 'space-between', marginLeft: '51%'}}>
-            <Text style={styles.graphValues}>danceability</Text>
-            <Text style={styles.graphValues}>0.734</Text>
+            <Text style={styles.graphValues}>speechiness</Text>
+            <Text style={styles.graphValues}>{this.state.speechiness}</Text>
           </View>
           <View style={{zIndex:5,position: 'absolute', alignSelf: 'auto', height: 91, justifyContent: 'space-between', marginLeft: '51%'}}>
-            <Text style={styles.graphValues}>acoustic</Text>
-            <Text style={styles.graphValues}>0.734</Text>
+            <Text style={styles.graphValues}>liveliness</Text>
+            <Text style={styles.graphValues}>{this.state.liveliness}</Text>
           </View>
           <View style={{zIndex:0,position: 'absolute', alignSelf: 'center',  width: '100%'}}>
             <View style={styles.line}>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextLeft}>2:58</Text>
+                <Text style={styles.statTextLeft}>{this.state.duration}</Text>
                 <Text style={styles.statDescText}>DURATION</Text>
               </View>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextRight}>50%</Text>
-                <Text style={styles.statDescText}>POPULARITY</Text>
+                <Text style={styles.statTextRight}>{this.state.popularity}%</Text>
+                <Text style={styles.statDescTextRight}>POPULARITY</Text>
               </View>
             </View>
             <View style={styles.line}>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextLeft}>B</Text>
+                <Text style={styles.statTextLeft}>{this.state.key}</Text>
                 <Text style={styles.statDescText}>KEY</Text>
               </View>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextRight}>111</Text>
-                <Text style={styles.statDescText}>BARS</Text>
+                <Text style={styles.statTextRight}>{this.state.bars}</Text>
+                <Text style={styles.statDescTextRight}>BARS</Text>
               </View>
             </View>
             <View style={styles.line}>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextLeft}>Major</Text>
+                <Text style={styles.statTextLeft}>{this.state.mode}</Text>
                 <Text style={styles.statDescText}>MODALITY</Text>
               </View>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextRight}>443</Text>
-                <Text style={styles.statDescText}>BEATS</Text>
+                <Text style={styles.statTextRight}>{this.state.beats}</Text>
+                <Text style={styles.statDescTextRight}>BEATS</Text>
               </View>
             </View>
             <View style={styles.line}>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextLeft}>4</Text>
+                <Text style={styles.statTextLeft}>{this.state.timeSig}</Text>
                 <Text style={styles.statDescText}>TIME SIGNATURE</Text>
               </View>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextRight}>10</Text>
-                <Text style={styles.statDescText}>SECTIONS</Text>
+                <Text style={styles.statTextRight}>{this.state.sections}</Text>
+                <Text style={styles.statDescTextRight}>SECTIONS</Text>
               </View>
             </View>
             <View style={styles.line}>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextLeft}>150</Text>
+                <Text style={styles.statTextLeft}>{this.state.bpm}</Text>
                 <Text style={styles.statDescText}>TEMPO (BPM)</Text>
               </View>
               <View style={styles.featureContainer}>
-                <Text style={styles.statTextRight}>669</Text>
-                <Text style={styles.statDescText}>SEGMENTS</Text>
+                <Text style={styles.statTextRight}>{this.state.segments}</Text>
+                <Text style={styles.statDescTextRight}>SEGMENTS</Text>
               </View>
             </View>
           </View>
         </View>
         <View style={styles.songInfoContainer}>
-          <Text style={styles.songTitle}>In Your Head - RL Grime Edit</Text>
-          <Text style={styles.songArtist}>G Jones, RL Grime</Text>
-          <Text style={styles.songTypeYear}>Single 2019</Text>
+          <Text style={styles.songTitle}>{this.state.name}</Text>
+          <Text style={styles.songArtist}>{this.state.artists}</Text>
+          <Text style={styles.songTypeYear}>{this.state.album}</Text>
         </View>
       {/* </ScrollView> */}
     </ImageBackground>
@@ -217,6 +272,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Spartan',
     fontSize: 15,
   },
+  statDescTextRight:{
+    color: 'white',
+    fontFamily: 'Spartan',
+    fontSize: 15,
+    textAlign: 'right',
+  },
   graphValues:{
     color: 'white',
     fontFamily: 'Spartan',
@@ -266,7 +327,8 @@ const styles = StyleSheet.create({
     width: 150,
     alignSelf: 'flex-end',
     marginTop: '2%',
-    marginRight: '2%'
+    marginRight: '2%',
+    marginBottom: '-3%',
   },
   buttonText:{
     color:'white',

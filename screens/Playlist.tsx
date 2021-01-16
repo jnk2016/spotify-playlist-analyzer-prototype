@@ -3,14 +3,16 @@ import {Button, Image, StyleSheet, Dimensions, TextInput, TouchableHighlight, Te
 import Modal from 'modal-react-native-web';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
+import AxiosGetToken from '../Axios Functions/AxiosGetToken';
 
-const playlistUriCode = '1HhAiDpmQdi5ryyFjzjlyD';  //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ
-const AuthToken = 
-'BQBQ9g_nIuPFlZGDYKc1MH05xg8o51W0SLxdibSDgXxCMhfvbIGX9zNNnyBGtHBojgr-7tVJtnGPUyp8R0w3sTVQ-XyaeJJM1WRxrb3_wC3XHIfBl12Es2pyq9v8elYEyNDgrUibMcFQ2X4'
-;
-const dimensions = Dimensions.get('window');
-const imageHeight = dimensions.width;
-const imageWidth = dimensions.width;
+//DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ  7am: 0fCpH2h614ebCnRW4Wmy9L
+const playlistUriCode = '0fCpH2h614ebCnRW4Wmy9L';  
+// const AuthToken = 
+// 'BQBQ9g_nIuPFlZGDYKc1MH05xg8o51W0SLxdibSDgXxCMhfvbIGX9zNNnyBGtHBojgr-7tVJtnGPUyp8R0w3sTVQ-XyaeJJM1WRxrb3_wC3XHIfBl12Es2pyq9v8elYEyNDgrUibMcFQ2X4'
+// ;
+// const dimensions = Dimensions.get('window');
+// const imageHeight = dimensions.width;
+// const imageWidth = dimensions.width;
 
 function determineKey(key){
   if(key == 0)      {return 'C'}
@@ -38,19 +40,36 @@ class PlaylistItems extends React.Component<{}, any>{
       Descrip: '',
       TrackAmount: '',
       TrackDetails: [],
+      AuthToken: '',
     };
   }
 
   componentDidMount() {
     this.renderValues();
   }
-  renderValues= async() =>{
+
+  // getToken = async() =>{
+  //   try{
+  //     const token = await AxiosGetToken.GetToken();
+  //     this.setState({
+  //       AuthToken: token.access_token
+  //     })
+  //   }catch (err) {
+  //     console.log(err);
+  //   }
+  // }
+
+  renderValues = async() =>{
     try{
+      let token = await AxiosGetToken.GetToken();
+      this.setState({
+        AuthToken: token.access_token
+      })
       let playlist = await axios({
       method: 'get',
       url:`https://api.spotify.com/v1/playlists/${playlistUriCode}`,
       headers: {
-        Authorization: `Bearer ${AuthToken}`
+        Authorization: `Bearer ${this.state.AuthToken}`
       },
       })
       .then(response=>{
@@ -69,7 +88,7 @@ class PlaylistItems extends React.Component<{}, any>{
             method: 'get',
             url:`https://api.spotify.com/v1/audio-features/${track.track.id}`,  //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ
             headers: {
-              Authorization: `Bearer ${AuthToken}`
+              Authorization: `Bearer ${this.state.AuthToken}`
             },
             })
             .then(response=>{
@@ -87,6 +106,8 @@ class PlaylistItems extends React.Component<{}, any>{
           let seconds = Math.round((track.track.duration_ms - (60000*minutes))/1000);
           let dur = `${minutes}:${seconds}`;
           if(seconds<10){dur = `${minutes}:0${seconds}`;}
+          let modality = 'Major';
+          if(songFeatures.mode == 0){modality = 'Minor';}
           return({
             artwork: track.track.album.images[1].url,
             name: track.track.name,
@@ -97,6 +118,16 @@ class PlaylistItems extends React.Component<{}, any>{
             energy: Math.round(songFeatures.energy * 10),
             timeSig: songFeatures.time_signature,
             duration: dur,
+            id: track.track.id,
+            popularity: track.track.popularity,
+            mode: modality,
+            // even more features
+            valence: songFeatures.valence,
+            liveliness: songFeatures.liveliness,
+            speechiness: songFeatures.speechiness,
+            instrumentalness: songFeatures.instrumentalness,
+            danceability: songFeatures.danceability,
+            acousticness: songFeatures.acousticness,
         });
       })),
       })
@@ -110,7 +141,30 @@ class PlaylistItems extends React.Component<{}, any>{
 
         BasicInfo: this.state.TrackDetails.map((song, i) => {
           return(
-          <TouchableOpacity style={styles.songList} onPress={()=>{this.props.navigation.navigate('Song')}} key={i}>
+          <TouchableOpacity style={styles.songList} onPress={()=>{
+              this.props.navigation.navigate('Song', {
+                token: this.state.AuthToken,
+                songID:song.id,
+                artwork: song.artwork,
+                name: song.name,
+                artists: song.artists,
+                album: song.album,
+                duration: song.duration,
+                key: song.key,
+                timeSig: song.timeSig,
+                bpm: song.bpm,
+                popularity: song.popularity,
+                mode: song.mode,
+                // in depth audio features
+                valence: song.valence,
+                liveliness: song.liveliness,
+                speechiness: song.speechiness,
+                instrumentalness: song.instrumentalness,
+                energy: song.energy,
+                danceability: song.danceability,
+                acousticness: song.acousticness,
+              })
+            }} key={i}>
             <View style={styles.songLeft}>
             <Image source={{uri: song.artwork}} style={styles.albumArtwork}/>
               <Text style={styles.songTextTrack}>{song.name}</Text>
