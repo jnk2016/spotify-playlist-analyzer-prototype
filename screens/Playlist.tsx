@@ -2,10 +2,84 @@ import React, {Component, useState} from 'react';
 import {Button, Image, StyleSheet, TextInput, TouchableHighlight, Text, View, Alert, ScrollView, ImageBackground} from 'react-native';
 import Modal from 'modal-react-native-web';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import axios from 'axios';
 
-class Playlist extends Component {
+export default function Playlist ({navigation}){
+class PlaylistItems extends React.Component<{}, any>{
+  constructor(props) {
+    super(props)
+    this.state = {
+      BasicInfo: [],
+    };
+  }
 
-  render() {return (
+  componentDidMount() {
+    this.renderValues();
+  }
+  renderValues= async() =>{
+    try{
+      let songs = await axios({
+      method: 'get',
+      url:'https://api.spotify.com/v1/playlists/4y7pEAyFZCDl2fW8SHrEKJ',
+      headers: {
+        Authorization: 'Bearer BQB2Ai1-Lz-pfQPtcskob2XOjbSYxJEpoHxQYVzsIKKW60DSgJmY3PfKRxO2yySH-PSBMxxr_nPlb47Mio5f9tK_XnTt58MQQvJe0Ed5Xp9UHYPLhaA1NKsMpfVPksJGu4m77oqylfsC9bw'
+      },
+      })
+      .then(response=>{
+          console.log(response.data);
+          // console.log(response.data.statements);
+          // console.log(response.data.statements[1]);
+          
+          return response.data.tracks.items;
+          // return response.data;
+      })
+      .catch(err =>{
+          console.log(err, err.response);
+          return err.response;
+      });
+      var count = 0;
+      this.setState({
+        BasicInfo: songs.map((song, i) => (
+          <TouchableOpacity style={styles.songList} onPress={()=>{navigation.navigate('Song')}}>
+            <View style={styles.songLeft}>
+            <Image source={{uri: song.track.album.images[1].url}} style={styles.albumArtwork}/>
+              <Text style={styles.songText}>In Your Head - RL Grime Edit</Text>
+            </View>
+            <View style={styles.songMiddle}>
+              <Text style={styles.songText}>{song.track.artists[0].name}</Text>
+              <Text style={styles.songText}>{song.track.name}</Text>
+            </View>
+            <View style={styles.songRight}>
+              <View style={styles.rightLeft}>
+                <Text style={styles.songText}>B Major</Text>
+                <Text style={styles.songText}>10</Text>
+              </View>
+              <View style={styles.rightRight}>
+                <Text style={styles.songText}>1B</Text>
+                <Text style={styles.songText}>150</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ))
+      });
+    }catch (err) {
+      console.log(err);
+    }
+  }
+  render(){
+    return(
+      <View>
+        {this.state.BasicInfo}
+      </View>
+    );
+  }
+}
+const [a, handleA] = useState(true);
+
+// class Playlist extends Component {
+
+//   render() {
+    return (
     <ImageBackground source = {{uri:require('../assets/images/planet_earth_7am.jpg')}} style = {styles.backgroundimage} blurRadius= {200}>
       <ScrollView>
         <View style={styles.headerContainer}>
@@ -62,7 +136,10 @@ class Playlist extends Component {
             <Text style={styles.barText}>BPM</Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.songList} onPress={()=>{this.props.navigation.navigate('Song')}}>
+
+        <PlaylistItems/>
+
+        {/* <TouchableOpacity style={styles.songList} onPress={()=>{this.props.navigation.navigate('Song')}}>
           <View style={styles.songLeft}>
           <Image source={require('../assets/images/in_your_head.jpeg')} style={styles.albumArtwork}/>
             <Text style={styles.songText}>In Your Head - RL Grime Edit</Text>
@@ -81,13 +158,13 @@ class Playlist extends Component {
               <Text style={styles.songText}>150</Text>
             </View>
           </View>
+        </TouchableOpacity> */}
 
-        </TouchableOpacity>
       </ScrollView>
     </ImageBackground>
   );}
 
-}
+// }
 
 const styles = StyleSheet.create({
   optionsContainer:{
@@ -296,4 +373,4 @@ const styles = StyleSheet.create({
 
 })
 
-  export default Playlist;
+// export default Playlist;
