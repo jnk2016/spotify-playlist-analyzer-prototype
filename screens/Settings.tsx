@@ -1,20 +1,26 @@
 import React, {useState, Component} from 'react';
-import { ScrollView, Image, StyleSheet, View, Button, TouchableOpacity, Text} from 'react-native';
+import { ScrollView, Image,  Dimensions,StyleSheet, View, Button, TouchableOpacity, Text} from 'react-native';
 import AxiosLatestStatement from '../Axios Functions/AxiosLatestStatement';
 import AxiosLatestPayment from '../Axios Functions/AxiosLatestPayment';
 import AxiosMileage from '../Axios Functions/AxiosMileage';
 
+
+const dimensions = Dimensions.get('window');
+const imageHeight = dimensions.height;
+const imageWidth = dimensions.width;
+
 export default class Settings extends Component{
     render(){
     return(
-        <View style={{height: '93vh'}}>
-            <View style = {styles.headingContainer}>
+        <View style={{height: imageHeight-48}}>
+        {/* <View style={{height:'100%'}}> */}
+            {/* <View style = {styles.headingContainer}>
                 <Text style={styles.heading}>SETTINGS</Text> 
             </View>
             <View style = {styles.bigContainer}>
                 <View style={styles.smallContainer}>
-                    {/* <Image source={require('../assets/images/Ellipseavatar.png')}
-                    style={{width: '18%',height:'18%', resizeMode: 'contain', alignSelf: 'center', marginTop: '-18%'}}/> */}
+                    <Image source={require('../assets/images/Ellipseavatar.png')}
+                    style={{width: '18%',height:'18%', resizeMode: 'contain', alignSelf: 'center', marginTop: '-18%'}}/>
                     <Text style={{fontWeight: '400', fontSize:18, alignSelf: 'center'}}>Danphuong Hoang</Text>
                     <TouchableOpacity style={styles.optionsContainer} onPress={()=>console.log("button pressed")}>
                         <Text style={styles.optionsText}>account</Text>
@@ -35,7 +41,7 @@ export default class Settings extends Component{
                         <Text style={styles.optionsText}>about</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </View> */}
         </View>
     );}
 }

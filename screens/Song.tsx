@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: '700',
     textAlign: 'left',
-    marginVertical: '2%',
+    // marginVertical: '2%',
   },
   songArtist:{
     color: 'white',
@@ -243,19 +243,21 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '500',
     textAlign: 'left',
-    marginVertical: '2%',
+    // marginVertical: '2%',
   },
   songTypeYear:{
     color: 'white',
     fontFamily:'Spartan',
     fontSize: 15,
     textAlign: 'left',
-    marginVertical: '2%',
+    // marginVertical: '2%',
   },
   songInfoContainer:{
     // width: '60%',
     alignSelf: 'center',
     marginVertical: '2%',
+    justifyContent:'space-between',
+    height: '15%'
   },
   statTextLeft:{
     color: 'white',

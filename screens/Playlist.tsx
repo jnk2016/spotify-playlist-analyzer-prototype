@@ -7,7 +7,7 @@ import AxiosGetToken from '../Axios Functions/AxiosGetToken';
 import {Picker} from '@react-native-community/picker';
 
 //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ  7am: 0fCpH2h614ebCnRW4Wmy9L
-const playlistUriCode = '1HhAiDpmQdi5ryyFjzjlyD';  
+const playlistUriCode = '0fCpH2h614ebCnRW4Wmy9L';  
 // const AuthToken = 
 // 'BQBQ9g_nIuPFlZGDYKc1MH05xg8o51W0SLxdibSDgXxCMhfvbIGX9zNNnyBGtHBojgr-7tVJtnGPUyp8R0w3sTVQ-XyaeJJM1WRxrb3_wC3XHIfBl12Es2pyq9v8elYEyNDgrUibMcFQ2X4'
 // ;
@@ -83,8 +83,8 @@ class PlaylistItems extends React.Component<{}, any>{
           console.log(err, err.response);
           return err.response;
       });
-
       this.setState({
+        TrackAmount: playlist.tracks.total,
         TrackDetails: await Promise.all(playlist.tracks.items.map(async(track) =>{
           let songFeatures = await axios({
             method: 'get',
@@ -134,6 +134,82 @@ class PlaylistItems extends React.Component<{}, any>{
         });
       })),
       })
+      // let iterations = Math.floor(this.state.TrackAmount/100);
+      // console.log(this.state.TrackAmount);
+      // let offs = 0;
+      // for(var i = 0; i < iterations; i++){
+      //   offs += 100;
+      //   let playlist = await axios({
+      //   method: 'get',
+      //   url:`https://api.spotify.com/v1/playlists/${playlistUriCode}/tracks`,
+      //   headers: {
+      //     Authorization: `Bearer ${this.state.AuthToken}`,
+      //   },
+      //   params:{
+      //     offset:100,
+      //   }
+      //   })
+      //   .then(response=>{
+      //       console.log(response.data);
+            
+      //       return response.data;
+      //   })
+      //   .catch(err =>{
+      //       console.log(err, err.response);
+      //       return err.response;
+      //   });
+      //     await Promise.all(playlist.items.map(async(track) =>{ // Problems with this definition
+      //       let songFeatures = await axios({
+      //         method: 'get',
+      //         url:`https://api.spotify.com/v1/audio-features/${track.track.id}`,  //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ
+      //         headers: {
+      //           Authorization: `Bearer ${this.state.AuthToken}`
+      //         },
+      //         })
+      //         .then(response=>{
+      //             console.log(response.data);
+                  
+      //             return response.data;
+      //         })
+      //         .catch(err =>{
+      //             console.log(err, err.response);
+      //             return err.response;
+      //         });
+      //       // let roundedBpm = songFeatures.tempo.round();
+      //       let keyString = determineKey(songFeatures.key);
+      //       let minutes = Math.floor(track.track.duration_ms/60000);
+      //       let seconds = Math.round((track.track.duration_ms - (60000*minutes))/1000);
+      //       let dur = `${minutes}:${seconds}`;
+      //       if(seconds<10){dur = `${minutes}:0${seconds}`;}
+      //       let modality = 'Major';
+      //       if(songFeatures.mode == 0){modality = 'Minor';}
+      //       this.setState(state=>{
+      //       const TrackDetails = state.TrackDetails.concat({
+      //         artwork: track.track.album.images[1].url,
+      //         name: track.track.name,
+      //         artists: track.track.artists[0].name,
+      //         album: track.track.album.name,
+      //         bpm: Math.round(songFeatures.tempo),
+      //         keyNum: songFeatures.key,
+      //         key: keyString,
+      //         energy: songFeatures.energy,
+      //         timeSig: songFeatures.time_signature,
+      //         duration: dur,
+      //         id: track.track.id,
+      //         popularity: track.track.popularity,
+      //         mode: modality,
+      //         // even more features
+      //         valence: songFeatures.valence,
+      //         liveliness: songFeatures.liveliness,
+      //         speechiness: songFeatures.speechiness,
+      //         instrumentalness: songFeatures.instrumentalness,
+      //         danceability: songFeatures.danceability,
+      //         acousticness: songFeatures.acousticness,
+      //       });
+      //       return{TrackDetails};
+      //     })
+      //     }))
+      // }
 
       this.setState({
         Name: playlist.name,
@@ -271,23 +347,23 @@ class PlaylistItems extends React.Component<{}, any>{
   filterPlaylist = (filterMethod, params) => {
     if(filterMethod == 'key'){
     this.setState({
-      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.bpm > b.bpm) ? 1 : -1)
+      TrackDetails: this.state.TrackDetails.filter(track=> (track.key==params))
     })}
     else if(filterMethod == 'energy'){
     this.setState({
-      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.keyNum > b.keyNum) ? 1 : -1)
+      TrackDetails: this.state.TrackDetails.filter(track=> (track.energy > params.minEnergy && track.energy < params.maxEnergy))
     })}
     else if(filterMethod == 'time sig.'){
     this.setState({
-      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.energy > b.energy) ? 1 : -1)
+      TrackDetails: this.state.TrackDetails.filter(track=> (track.timeSig==params))
     })}
     else if(filterMethod == 'bpm'){
     this.setState({
-      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.name > b.name) ? 1 : -1)
+      TrackDetails: this.state.TrackDetails.filter(track=> (track.bpm > params.minBpm && track.bpm < params.maxBpm))
     })}
     else if(filterMethod == 'artists'){
     this.setState({
-      TrackDetails: this.state.TrackDetails.sort((a,b) => (a.artists > b.artists) ? 1 : -1)
+      TrackDetails: this.state.TrackDetails.filter(track=> (track.artists==params.artists))
     })}
     this.setState({
       BasicInfo: this.state.TrackDetails.map((song,i) => {
@@ -387,7 +463,10 @@ class PlaylistItems extends React.Component<{}, any>{
             <TouchableOpacity style={styles.optionsButton}>
               <Text style={styles.navText}>energy</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.optionsButton}>
+            <TouchableOpacity style={styles.optionsButton} onPress={()=>{
+              let params = {minBpm: 100, maxBpm: 140};
+              this.filterPlaylist('bpm', params);
+            }}>
               <Text style={styles.navText}>bpm</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.optionsButton}>
