@@ -7,7 +7,7 @@ import AxiosGetToken from '../Axios Functions/AxiosGetToken';
 import {Picker} from '@react-native-community/picker';
 
 //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ  7am: 0fCpH2h614ebCnRW4Wmy9L
-const playlistUriCode = '0fCpH2h614ebCnRW4Wmy9L';  
+const playlistUriCode = '1HhAiDpmQdi5ryyFjzjlyD';  
 // const AuthToken = 
 // 'BQBQ9g_nIuPFlZGDYKc1MH05xg8o51W0SLxdibSDgXxCMhfvbIGX9zNNnyBGtHBojgr-7tVJtnGPUyp8R0w3sTVQ-XyaeJJM1WRxrb3_wC3XHIfBl12Es2pyq9v8elYEyNDgrUibMcFQ2X4'
 // ;
@@ -43,6 +43,10 @@ class PlaylistItems extends React.Component<{}, any>{
       TrackDetails: [],
       AuthToken: '',
       selectedValue:'date added',
+      keyPickerVal:'',
+      showFilterSpecs: 'initial',
+      min:0,
+      max:200,
     };
   }
 
@@ -347,11 +351,11 @@ class PlaylistItems extends React.Component<{}, any>{
   filterPlaylist = (filterMethod, params) => {
     if(filterMethod == 'key'){
     this.setState({
-      TrackDetails: this.state.TrackDetails.filter(track=> (track.key==params))
+      TrackDetails: this.state.TrackDetails.filter(track=> (track.keyNum==params))
     })}
     else if(filterMethod == 'energy'){
     this.setState({
-      TrackDetails: this.state.TrackDetails.filter(track=> (track.energy > params.minEnergy && track.energy < params.maxEnergy))
+      TrackDetails: this.state.TrackDetails.filter(track=> ((Math.round(track.energy * 10) >= params.minEnergy) && Math.round(track.energy * 10) <= params.maxEnergy))
     })}
     else if(filterMethod == 'time sig.'){
     this.setState({
@@ -359,7 +363,7 @@ class PlaylistItems extends React.Component<{}, any>{
     })}
     else if(filterMethod == 'bpm'){
     this.setState({
-      TrackDetails: this.state.TrackDetails.filter(track=> (track.bpm > params.minBpm && track.bpm < params.maxBpm))
+      TrackDetails: this.state.TrackDetails.filter(track=> (track.bpm >= params.minBpm && track.bpm <= params.maxBpm))
     })}
     else if(filterMethod == 'artists'){
     this.setState({
@@ -416,6 +420,180 @@ class PlaylistItems extends React.Component<{}, any>{
     })
   }
 
+  renderFilterSpecs=()=>{
+    if(this.state.showFilterSpecs == 'initial'){
+      return(
+        <View></View>
+      );}
+    else if (this.state.showFilterSpecs == 'key'){
+      return(
+        <View style={styles.filterSpecContainer}>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', width:'90%', alignSelf:'center'}}>
+            <TouchableOpacity style={{alignSelf:'center'}} onPress={()=>{this.setState({showFilterSpecs:'initial'})}}>
+              <Text style={styles.filterSpecText}> X </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'#8F8F8F', paddingVertical: '7%', paddingHorizontal:'20%', borderRadius: 50}} onPress={()=>{this.renderValues()}}>
+              <Text style={styles.filterSpecText}>RESET</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', marginTop: '5%'}}>
+            <View style = {styles.threeKeyContainer}>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 0);}}>
+                <Text style={styles.filterSpecText}>    C    </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 1);}}>
+                <Text style={styles.filterSpecText}>C♯ / D♭</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 2);}}>
+                <Text style={styles.filterSpecText}>    D    </Text>
+              </TouchableOpacity>
+            </View>
+            <View style = {styles.threeKeyContainer}>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 3);}}>
+                <Text style={styles.filterSpecText}>D♯ / E♭</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 4);}}>
+                <Text style={styles.filterSpecText}>    E    </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 5);}}>
+                <Text style={styles.filterSpecText}>    F    </Text>
+              </TouchableOpacity>
+            </View>
+            <View style = {styles.threeKeyContainer}>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 6);}}>
+                <Text style={styles.filterSpecText}>F♯ / G♭</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 7);}}>
+                <Text style={styles.filterSpecText}>    G    </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 8);}}>
+                <Text style={styles.filterSpecText}>G♯ / A♭</Text>
+              </TouchableOpacity>
+            </View>
+            <View style = {styles.threeKeyContainer}>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 9);}}>
+                <Text style={styles.filterSpecText}>    A    </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 10);}}>
+                <Text style={styles.filterSpecText}>A♯ / B♭</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.filterSpecButton} onPress={()=>{this.filterPlaylist('key', 11);}}>
+                <Text style={styles.filterSpecText}>    B    </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )
+    }
+    else if (this.state.showFilterSpecs == 'energy'){
+      return(
+        <View style={styles.filterSpecInputContainer}>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', width:'90%', alignSelf:'center'}}>
+            <TouchableOpacity style={{alignSelf:'center'}} onPress={()=>{this.setState({showFilterSpecs:'initial'})}}>
+              <Text style={styles.filterSpecText}> X </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'#8F8F8F', paddingVertical: '7%', paddingHorizontal:'20%', borderRadius: 50}} onPress={()=>{this.renderValues()}}>
+              <Text style={styles.filterSpecText}>RESET</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', marginTop:'10%'}}>
+            <Text style={styles.filterSpecMinMaxText}>min  energy</Text>
+            <TextInput
+              style={styles.filterSpecInput}
+              onChangeText = {minEnergy=>this.setState({min:parseInt(minEnergy)})}
+              placeholder={'0'}
+              allowFontScaling = {true}
+              placeholderTextColor='#C4C4C4'
+              />
+          </View>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', marginVertical: '10%'}}>
+            <Text style={styles.filterSpecMinMaxText}>max energy</Text>
+            <TextInput
+              style={styles.filterSpecInput}
+              onChangeText = {maxEnergy=>this.setState({max:parseInt(maxEnergy)})}
+              placeholder={'10'}
+              allowFontScaling = {true}
+              placeholderTextColor='#C4C4C4'
+              />
+          </View>
+          <View style={{flexDirection: 'row', justifyContent:'space-evenly',marginBottom:'3%', marginTop: '1%',}}>
+            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'#5BCC96', paddingVertical: '5%', paddingHorizontal:'100%', borderRadius:50}} onPress={()=>{this.filterPlaylist('energy', {minEnergy:this.state.min, maxEnergy:this.state.max})}}>
+              <Text style={{color:'white', alignSelf:'center'}}>FILTER</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    }
+    else if (this.state.showFilterSpecs == 'bpm'){
+      return(
+        <View style={styles.filterSpecInputContainer}>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', width:'90%', alignSelf:'center'}}>
+            <TouchableOpacity style={{alignSelf:'center'}} onPress={()=>{this.setState({showFilterSpecs:'initial'})}}>
+              <Text style={styles.filterSpecText}> X </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'#8F8F8F', paddingVertical: '7%', paddingHorizontal:'20%', borderRadius: 50}} onPress={()=>{this.renderValues()}}>
+              <Text style={styles.filterSpecText}>RESET</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', marginTop:'10%'}}>
+            <Text style={styles.filterSpecMinMaxText}>min  bpm</Text>
+            <TextInput
+              style={styles.filterSpecInput}
+              onChangeText = {minBpm=>this.setState({min:parseInt(minBpm)})}
+              // placeholder={'0'}
+              allowFontScaling = {true}
+              placeholderTextColor='#C4C4C4'
+              />
+          </View>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', marginVertical: '10%'}}>
+            <Text style={styles.filterSpecMinMaxText}>max bpm</Text>
+            <TextInput
+              style={styles.filterSpecInput}
+              onChangeText = {maxBpm=>this.setState({max:parseInt(maxBpm)})}
+              // placeholder={'10'}
+              allowFontScaling = {true}
+              placeholderTextColor='#C4C4C4'
+              />
+          </View>
+          <View style={{flexDirection: 'row', justifyContent:'space-evenly',marginBottom:'3%', marginTop: '1%',}}>
+            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'#5BCC96', paddingVertical: '5%', paddingHorizontal:'100%', borderRadius:50}} onPress={()=>{this.filterPlaylist('bpm', {minBpm:this.state.min, maxBpm:this.state.max})}}>
+              <Text style={{color:'white', alignSelf:'center'}}>FILTER</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    }
+    else if (this.state.showFilterSpecs == 'timeSig'){
+      return(
+        <View style={styles.filterSpecInputContainer}>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', width:'90%', alignSelf:'center'}}>
+            <TouchableOpacity style={{alignSelf:'center'}} onPress={()=>{this.setState({showFilterSpecs:'initial'})}}>
+              <Text style={styles.filterSpecText}> X </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'#8F8F8F', paddingVertical: '7%', paddingHorizontal:'20%', borderRadius: 50}} onPress={()=>{this.renderValues()}}>
+              <Text style={styles.filterSpecText}>RESET</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection: 'row', justifyContent:'space-between', marginVertical: '10%'}}>
+            <Text style={styles.filterSpecMinMaxText}>time signature</Text>
+            <TextInput
+              style={styles.filterSpecInput}
+              onChangeText = {timeSig=>this.setState({max:parseInt(timeSig)})}
+              // placeholder={'10'}
+              allowFontScaling = {true}
+              placeholderTextColor='#C4C4C4'
+              />
+          </View>
+          <View style={{flexDirection: 'row', justifyContent:'space-evenly',marginBottom:'3%', marginTop: '1%',}}>
+            <TouchableOpacity style={{alignSelf:'center', backgroundColor:'#5BCC96', paddingVertical: '5%', paddingHorizontal:'100%', borderRadius:50}} onPress={()=>{this.filterPlaylist('time sig.', this.state.max)}}>
+              <Text style={{color:'white', alignSelf:'center'}}>FILTER</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )
+    }
+  }
+
   render(){return (
     // <View style={{
     //   height: imageHeight-45,
@@ -438,6 +616,7 @@ class PlaylistItems extends React.Component<{}, any>{
             <Text style={styles.buttonText}>PLAY ON SPOTIFY</Text>
           </TouchableOpacity>
         </View>
+          {this.renderFilterSpecs()}
         <View style={styles.optionsContainer}>
           <View style={styles.leftOptions}>
             <Text style={styles.optionsText}>sort by:</Text>
@@ -457,19 +636,34 @@ class PlaylistItems extends React.Component<{}, any>{
           </View>
           <View style={styles.rightOptions}>
             <Text style={styles.optionsText}>filter by:</Text>
-            <TouchableOpacity style={styles.optionsButton}>
+            <TouchableOpacity style={styles.optionsButton} onPress={()=>{this.setState({showFilterSpecs:'key'})}}>
               <Text style={styles.navText}>key</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.optionsButton}>
+            {/* <Picker style={styles.optionsButton} selectedValue={this.state.keyPickerVal} onValueChange={(itemValue,itemIndex) =>{
+              this.setState({keyPickerVal:itemValue});
+              this.filterPlaylist('key',itemValue);
+              }}>
+              <Picker.Item label = "key" value = {-1}/>
+              <Picker.Item label = "C" value = {0}/>
+              <Picker.Item label = "C♯ / D♭" value = {1}/>
+              <Picker.Item label = "D" value = {2}/>
+              <Picker.Item label = "D♯ / E♭" value = {3}/>
+              <Picker.Item label = "E" value = {4}/>
+              <Picker.Item label = "F" value = {5}/>
+              <Picker.Item label = "F♯ / G♭" value = {6}/>
+              <Picker.Item label = "G" value = {7}/>
+              <Picker.Item label = "G♯ / A♭" value = {8}/>
+              <Picker.Item label = "A" value = {9}/>
+              <Picker.Item label = "A♯ / B♭" value = {10}/>
+              <Picker.Item label = "B" value = {11}/>
+            </Picker> */}
+            <TouchableOpacity style={styles.optionsButton} onPress={()=>{this.setState({showFilterSpecs:'energy'})}}>
               <Text style={styles.navText}>energy</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.optionsButton} onPress={()=>{
-              let params = {minBpm: 100, maxBpm: 140};
-              this.filterPlaylist('bpm', params);
-            }}>
+            <TouchableOpacity style={styles.optionsButton} onPress={()=>{this.setState({showFilterSpecs:'bpm'})}}>
               <Text style={styles.navText}>bpm</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.optionsButton}>
+            <TouchableOpacity style={styles.optionsButton} onPress={()=>{this.setState({showFilterSpecs:'timeSig'})}}>
               <Text style={styles.navText}>time sig.</Text>
             </TouchableOpacity>
           </View>
@@ -508,6 +702,65 @@ class PlaylistItems extends React.Component<{}, any>{
 // }
 
 const styles = StyleSheet.create({
+  pickerItemStyle:{
+    fontFamily: 'Spartan',
+    textAlign: 'center',
+  },
+  filterSpecContainer:{
+    // height:100,
+    zIndex:5,
+    position:'absolute',
+    alignSelf:'flex-end',
+    marginRight:'5%',
+    backgroundColor: '#353535',
+    marginTop:'7%',
+    width:'20%',
+    padding:'1%',
+  },
+  filterSpecInputContainer:{
+    // height:100,
+    zIndex:5,
+    position:'absolute',
+    alignSelf:'flex-end',
+    marginRight:'5%',
+    backgroundColor: '#353535',
+    marginTop:'7%',
+    width:'12%',
+    padding: '1%'
+  },
+  threeKeyContainer:{
+    flexDirection:'column',
+    marginHorizontal: '4%'
+  },
+  filterSpecButton:{
+    marginVertical:'10%',
+    paddingVertical:'2%',
+    // paddingHorizontal:'1%',
+    alignSelf: 'center',
+    // backgroundColor:'#C4C4C4',
+    width:'120%',
+    textAlign: 'center',
+    borderWidth:1,
+    borderColor:'#E5E5E5'
+    // width:60,
+  },
+  filterSpecText:{
+    fontSize:12,
+    fontFamily: 'Spartan',
+    color:'white',
+  },
+  filterSpecMinMaxText:{
+    fontSize:12,
+    fontFamily: 'Spartan',
+    color:'white',
+    paddingRight:'20%'
+  },
+  filterSpecInput:{
+    color:'white',
+    borderColor:'#C4C4C4',
+    borderWidth:1,
+    width:'50%',
+  },
   optionsContainer:{
     flexDirection: 'row',
     width:'95%',
@@ -533,6 +786,8 @@ const styles = StyleSheet.create({
     padding:5,
     backgroundColor:'#e5e5e5',
     borderRadius:20,
+    fontFamily: 'Spartan',
+    textAlign: 'center',
   },
   navText: {
     color:'black',
@@ -551,6 +806,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#e5e5e5',
     width:90,
     borderRadius:20,
+    fontFamily: 'Spartan',
   },
   headBar: {
     borderWidth:1,
@@ -708,7 +964,7 @@ const styles = StyleSheet.create({
     paddingVertical: '8%',
     paddingHorizontal: '5%',
     borderRadius: 100,
-    marginTop: '35%',
+    marginTop: '20%',
     // alignSelf:'center',
     // alignContent: 'center',
     width: 160,
