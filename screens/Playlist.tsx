@@ -7,7 +7,7 @@ import AxiosGetToken from '../Axios Functions/AxiosGetToken';
 import {Picker} from '@react-native-community/picker';
 
 //DP: 1HhAiDpmQdi5ryyFjzjlyD, JK(Test): 4y7pEAyFZCDl2fW8SHrEKJ  7am: 0fCpH2h614ebCnRW4Wmy9L
-const playlistUriCode = '1HhAiDpmQdi5ryyFjzjlyD';  
+const playlistUriCode = '0fCpH2h614ebCnRW4Wmy9L';  
 // const AuthToken = 
 // 'BQBQ9g_nIuPFlZGDYKc1MH05xg8o51W0SLxdibSDgXxCMhfvbIGX9zNNnyBGtHBojgr-7tVJtnGPUyp8R0w3sTVQ-XyaeJJM1WRxrb3_wC3XHIfBl12Es2pyq9v8elYEyNDgrUibMcFQ2X4'
 // ;
@@ -67,10 +67,12 @@ class PlaylistItems extends React.Component<{}, any>{
 
   renderValues = async() =>{
     try{
+      /* Getting the access token  */
       let token = await AxiosGetToken.GetToken();
       this.setState({
         AuthToken: token.access_token
       })
+      /* Get all the tracks from the playlist */
       let playlist = await axios({
       method: 'get',
       url:`https://api.spotify.com/v1/playlists/${playlistUriCode}`,
@@ -135,9 +137,10 @@ class PlaylistItems extends React.Component<{}, any>{
             instrumentalness: songFeatures.instrumentalness,
             danceability: songFeatures.danceability,
             acousticness: songFeatures.acousticness,
-        });
-      })),
+          });
+        })),
       })
+
       // let iterations = Math.floor(this.state.TrackAmount/100);
       // console.log(this.state.TrackAmount);
       // let offs = 0;
@@ -150,7 +153,7 @@ class PlaylistItems extends React.Component<{}, any>{
       //     Authorization: `Bearer ${this.state.AuthToken}`,
       //   },
       //   params:{
-      //     offset:100,
+      //     offset:offs,
       //   }
       //   })
       //   .then(response=>{
@@ -694,12 +697,6 @@ class PlaylistItems extends React.Component<{}, any>{
   }
 }
 
-// class Playlist extends Component {
-
-//   render() {
-    
-
-// }
 
 const styles = StyleSheet.create({
   pickerItemStyle:{
